@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stopwatch</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: white;
+            color: black;
+            margin: 0;
+        }
+        .container {
+            text-align: center;
+            padding: 20px;
+            width: 90%;
+            max-width: 400px;
+            border: 2px solid black;
+            box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.3), -4px -4px 10px rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            transition: height 0.3s ease-in-out;
+        }
+        #display {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+        .buttons button {
+            font-size: 1rem;
+            padding: 10px 15px;
+            margin: 5px;
+            border: 2px solid black;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100px;
+            background: white;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+            transition: transform 0.2s ease-in-out;
+        }
+        .buttons button:active {
+            transform: scale(1.1);
+        }
+        #laps {
+            list-style: none;
+            padding: 0;
+            margin-top: 20px;
+            width: 100%;
+            text-align: center;
+        }
+        li {
+            padding: 10px;
+            border-bottom: 2px solid black;
+            width: 100%;
+            display: block;
+        }
+        @media (max-width: 480px) {
+            .container {
+                width: 80%;
+                height: 500px;
+                min-height: 90vh;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                padding-bottom: 20px;
+                overflow-x: hidden;
+            }
+            .container h1{
+                font-size: 60px;
+                position: relative;
+                top: -90px;
+            }
+            #display{
+                position: relative;
+                top: -70px;
+                font-size: 50px;
+            }
+            .buttons {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                padding-left: 20px;
+                padding-right: 20px;
+            }
+            .buttons button {
+                width: 100px;
+                margin-bottom: 30px;
+                font-size: 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="stopwatchContainer">
+        <h1>Stopwatch</h1>
+        <div id="display">00:00:00.000</div>
+        <div class="buttons">
+            <button onclick="startTimer()">Start</button>
+            <button onclick="stopTimer()">Stop</button>
+            <button onclick="resetTimer()">Reset</button>
+            <button onclick="recordLap()">Lap</button>
+        </div>
+        <ul id="laps"></ul>
+    </div>
+    <script>
+        let timer;
+        let [hours, minutes, seconds, milliseconds] = [0, 0, 0, 0];
+        let isRunning = false;
+        let container = document.getElementById('stopwatchContainer');
+        
+        function updateDisplay() {
+            document.getElementById('display').innerText = 
+                `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}.${String(milliseconds).padStart(3, '0')}`;
+        }
+
+        function startTimer() {
+            if (!isRunning) {
+                isRunning = true;
+                timer = setInterval(() => {
+                    milliseconds += 10;
+                    if (milliseconds === 1000) { milliseconds = 0; seconds++; }
+                    if (seconds === 60) { seconds = 0; minutes++; }
+                    if (minutes === 60) { minutes = 0; hours++; }
+                    updateDisplay();
+                }, 10);
+            }
+        }
+
+        function stopTimer() {
+            clearInterval(timer);
+            isRunning = false;
+        }
+
+        function resetTimer() {
+            stopTimer();
+            [hours, minutes, seconds, milliseconds] = [0, 0, 0, 0];
+            updateDisplay();
+            document.getElementById('laps').innerHTML = '';
+            container.style.height = 'auto';
+        }
+
+        function recordLap() {
+            if (isRunning) {
+                let lapTime = document.createElement('li');
+                lapTime.innerText = document.getElementById('display').innerText;
+                document.getElementById('laps').appendChild(lapTime);
+                container.style.height = 'auto';
+            }
+        }
+    </script>
+</body>
+</html>
